@@ -1,0 +1,45 @@
+pipeline {
+     agent { label "Jenkins-Agent" }
+     environment {
+              APP_NAME = "myapp-pipeline"  
+     }
+     stages{
+        stage("cleanup workspace") {
+          steps{
+            cleanWs()
+          }
+        }
+
+        stage("Checkout from SCM") {
+          steps {
+            git branch: 'main', credentialsId: 'github', url: 'https://github.com/jawaharnotes/registration-app-to-learn'
+          }
+        }
+
+        stage("Update the Deployment Tags") {
+          steps{
+            sh """
+               cat deployment.yaml
+               sed -i 's/${APP_NAME}.*/${APP_NAME}:${IMAGE_TAG}/g' deployment.yaml
+               cat deployment.yaml
+               """
+          }
+        }
+
+       stage("Push the chnaged deployment file to Git") {
+         steps{
+           sh """
+              git config --global user.name "Jawahar"
+              git config --global user.email "jawaharr1393@gmail.com"
+              git add deployment.yaml
+              git commit -m "deployment image tags Updated"
+              """
+           withCredentials([gitUsernamePassword(credentialsId: 'github', gitTollName: 'Default')]) {
+             sh "git push https://github.com/jawaharnotes/registration-app-to-learn main"
+           }
+         }
+       }
+       
+     }
+  
+}
