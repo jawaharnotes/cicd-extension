@@ -12,7 +12,7 @@ pipeline {
 
         stage("Checkout from SCM") {
           steps {
-            git branch: 'main', credentialsId: 'github', url: 'https://github.com/jawaharnotes/registration-app-to-learn'
+            git branch: 'main', credentialsId: 'github', url: 'https://github.com/jawaharnotes/cicd-extension'
           }
         }
 
@@ -35,7 +35,7 @@ pipeline {
               git commit -m "deployment image tags Updated"
               """
            withCredentials([gitUsernamePassword(credentialsId: 'github', gitTollName: 'Default')]) {
-             sh "git push https://github.com/jawaharnotes/registration-app-to-learn main"
+             sh "git push https://github.com/jawaharnotes/cicd-extension main"
            }
          }
        }
